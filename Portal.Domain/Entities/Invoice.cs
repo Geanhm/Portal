@@ -1,23 +1,16 @@
-using System;
+using Portal.Domain.Entities.Enums;
+using Portal.Domain.Validators;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Portal.Domain.Validators;
 
 namespace Portal.Domain.Entities
 {
-    public enum InvoiceStatus
-    {
-        Pendente = 1,
-        Aprovada = 2,
-        Cancelada = 3
-    }
-
     public class Invoice : BaseEntity
     {
         public Invoice()
         {
             // generate a readable unique invoice number
-            Number = $"INV-{DateTime.UtcNow:yyyyMMddHHmmssfff}-{Guid.NewGuid():N}".ToUpper();
+            Number = $"INV-{DateTime.UtcNow:yyyyMMddHHmmssfff}-{Guid.NewGuid():N}".ToUpper(); //To do gerar de outra forma mais numerica
             IssueDate = DateTime.UtcNow;
             Status = InvoiceStatus.Pendente;
         }
@@ -51,5 +44,8 @@ namespace Portal.Domain.Entities
 
         [MaxLength(500)]
         public string? Observacoes { get; set; }
+
+
+
     }
 }

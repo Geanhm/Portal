@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Portal.Domain.Entities.Enums;
+using Portal.Domain.Validators;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Portal.Domain.Validators;
 
 namespace Portal.Domain.Entities
 {
@@ -34,12 +30,6 @@ namespace Portal.Domain.Entities
         public decimal PercentualComissao { get; set; }
 
         [Required]
-        public VendedorStatus Status { get; set; } = VendedorStatus.Ativo;
-    }
-
-    public enum VendedorStatus
-    {
-        Ativo = 1,
-        Inativo = 2
+        public StatusAtivoInativo Status { get; set; } = StatusAtivoInativo.Ativo;
     }
 }

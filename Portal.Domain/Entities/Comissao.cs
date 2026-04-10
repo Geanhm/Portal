@@ -1,16 +1,9 @@
-using System;
+using Portal.Domain.Entities.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Portal.Domain.Entities
 {
-    public enum ComissaoStatus
-    {
-        Pendente = 1,
-        Paga = 2,
-        Cancelada = 3
-    }
-
     public class Comissao : BaseEntity
     {
         [Required]
