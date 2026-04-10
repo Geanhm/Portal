@@ -1,7 +1,8 @@
+using Portal.Domain.Entities;
+using Portal.Domain.Entities.Enums;
+using Portal.Tests.Helpers;
 using System;
 using System.Linq;
-using Portal.Domain.Entities;
-using Portal.Tests.Helpers;
 using Xunit;
 
 namespace Portal.Tests

@@ -1,7 +1,7 @@
-using System.Linq;
-using System.ComponentModel.DataAnnotations;
 using Portal.Domain.Entities;
+using Portal.Domain.Entities.Enums;
 using Portal.Tests.Helpers;
+using System.Linq;
 using Xunit;
 
 namespace Portal.Tests
@@ -14,24 +14,30 @@ namespace Portal.Tests
             var vendedor = new Vendedor
             {
                 NomeCompleto = "Fulano de Tal",
-                Cpf = "529.982.247-25", // sample valid CPF
+                Cpf = "529.982.247-25",
                 Email = "fulano@example.com",
                 Telefone = "5511999999999",
                 PercentualComissao = 10m,
-                Status = VendedorStatus.Ativo
+                Status = StatusAtivoInativo.Ativo
             };
 
             var results = ValidationHelper.Validate(vendedor);
             Assert.Empty(results);
         }
 
-        [Fact]
-        public void InvalidCpf_Should_FailValidation()
+        [Theory]
+        [InlineData("123.456.789-00")]
+        [InlineData("123.456.789-00")]
+        [InlineData("123.456.789-00")]
+        [InlineData("123.456.789-00")]
+        [InlineData("123.456.789-00")]
+        [InlineData("123.456.789-00")]
+        public void InvalidCpf_Should_FailValidation(string cpf)
         {
             var vendedor = new Vendedor
             {
                 NomeCompleto = "Fulano",
-                Cpf = "111.111.111-11",
+                Cpf = cpf,
                 Email = "fulano@example.com",
                 PercentualComissao = 5m
             };
