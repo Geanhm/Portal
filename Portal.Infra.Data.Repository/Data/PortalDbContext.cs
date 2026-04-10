@@ -15,11 +15,11 @@ namespace Portal.Infra.Data.Repository
         public DbSet<Invoice> Invoices { get; set; } = null!;
         public DbSet<Comissao> Comissoes { get; set; } = null!;
 
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    // Configurações extras (tamanho de campos, índices) vão aqui
-        //    modelBuilder.Entity<Vendedor>().Property(u => u.Nome).HasMaxLength(100).IsRequired();
-        //    base.OnModelCreating(modelBuilder);
-        //}
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Configurações extras (tamanho de campos, índices) vão aqui
+            //modelBuilder.Entity<Vendedor>().Property(u => u.Nome).HasMaxLength(100).IsRequired();
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }
