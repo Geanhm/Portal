@@ -1,0 +1,20 @@
+services:
+  portal-api:
+    build:
+      context: .
+      dockerfile: Portal.Web/Dockerfile
+    ports:
+      - "5000:8080" # Acessa a API em localhost:5000
+    depends_on:
+      - sqlserver
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=PortalDb;User Id=sa;Password=narwal@2026;TrustServerCertificate=True;
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver # O nome aqui deve ser o mesmo usado no Server da ConnectionString acima
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=narwal@2026
+    ports:
+      - "1433:1433"
