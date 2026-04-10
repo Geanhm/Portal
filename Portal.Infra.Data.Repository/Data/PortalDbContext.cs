@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Portal.Domain.Entities;
 
 namespace Portal.Infra.Data.Repository
 {
@@ -9,7 +10,16 @@ namespace Portal.Infra.Data.Repository
         {
         }
 
-        // Add your DbSet<T> properties here, for example:
-        // public DbSet<User> Users { get; set; }
+        // Sample DbSet properties for your entities
+        public DbSet<Vendedor> Vendedores { get; set; } = null!;
+        public DbSet<Invoice> Invoices { get; set; } = null!;
+        public DbSet<Comissao> Comissoes { get; set; } = null!;
+
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
+        //    // Configurações extras (tamanho de campos, índices) vão aqui
+        //    modelBuilder.Entity<Vendedor>().Property(u => u.Nome).HasMaxLength(100).IsRequired();
+        //    base.OnModelCreating(modelBuilder);
+        //}
     }
 }
