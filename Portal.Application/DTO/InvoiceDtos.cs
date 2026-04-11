@@ -25,6 +25,8 @@ namespace Portal.Application.DTO
 
     public class InvoiceUpdateDto
     {
+        public Guid? VendedorId { get; set; }
+
         [MaxLength(200)]
         public string? Cliente { get; set; }
 
@@ -35,15 +37,13 @@ namespace Portal.Application.DTO
 
         [MaxLength(500)]
         public string? Observacoes { get; set; }
-
-        public string? Status { get; set; }
     }
 
     public class InvoiceReadDto
     {
         public Guid Id { get; set; }
         public string Number { get; set; } = null!;
-        public DateTime IssueDate { get; set; }
+        public DateTime DataEmissao { get; set; }
         public Guid VendedorId { get; set; }
         public string Cliente { get; set; } = null!;
         public string ClienteDocumento { get; set; } = null!;

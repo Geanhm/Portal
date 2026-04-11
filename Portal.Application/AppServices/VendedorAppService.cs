@@ -92,7 +92,7 @@ namespace Portal.Application.AppServices
             if (await _db.ExisteEmail(dto.Email))
                 throw new BusinessException("Este email já está sendo usado por outro vendedor.");
 
-            entity.AlterarVendedor(
+            entity.UpdateVendedor(
                 dto.NomeCompleto,
                 dto.Cpf,
                 dto.Email,

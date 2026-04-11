@@ -23,6 +23,7 @@ namespace Portal.Infra.Data.Repository.Data.Configurations
 
             builder.HasOne(i => i.Vendedor)
                    .WithMany()
+                   .IsRequired()
                    .HasForeignKey(i => i.VendedorId)
                    .OnDelete(DeleteBehavior.Restrict);
 

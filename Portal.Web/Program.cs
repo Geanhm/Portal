@@ -6,14 +6,11 @@ using Portal.Infra.Data.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-//builder.Services.AddOpenApi();
-
-// Register controllers and EF Core DbContext
 builder.Services.AddControllers();
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<PortalDbContext>(options =>
     options.UseSqlServer(connectionString, sqlOptions =>
     {
@@ -23,17 +20,11 @@ builder.Services.AddDbContext<PortalDbContext>(options =>
             errorNumbersToAdd: null);
     }));
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-//builder.Services.AddScoped<IVendedorRepository, VendedorRepository>();
-//builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
-
 builder.Services.AddScoped<IVendedorAppService, VendedorAppService>();
 builder.Services.AddScoped<IInvoiceAppService, InvoiceAppService>();
 
-
 var app = builder.Build();
+
 
 app.Use(async (context, next) =>
 {
@@ -44,11 +35,15 @@ app.Use(async (context, next) =>
     catch (BusinessException ex)
     {
         context.Response.StatusCode = 400;
+        context.Response.ContentType = "application/json";
         await context.Response.WriteAsJsonAsync(new { error = ex.Message });
     }
     catch (Exception ex)
     {
+        Console.WriteLine($"[Erro Crítico]: {ex.Message}"); //Criar log apartir daqui
+        
         context.Response.StatusCode = 500;
+        context.Response.ContentType = "application/json";  
         await context.Response.WriteAsJsonAsync(new { error = "Ocorreu um erro interno inesperado." });
     }
 });
@@ -56,13 +51,13 @@ app.Use(async (context, next) =>
 //if (app.Environment.IsDevelopment())
 //{
 //app.MapOpenApi();
-app.UseSwagger();
-app.UseSwaggerUI();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 //}
 
 app.UseHttpsRedirection();
 
-try
+try //To do.: retirar o try catch depois de testar via swagger.
 {
     app.MapControllers();
 }
@@ -70,14 +65,14 @@ catch (System.Reflection.ReflectionTypeLoadException ex)
 {
     foreach (var le in ex.LoaderExceptions)
     {
-        Console.WriteLine(le?.Message); // ISSO vai te dizer qual DLL está faltando
+        Console.WriteLine(le?.Message);
     }
 }
 
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<PortalDbContext>();
-    db.Database.Migrate(); // Aplica migrations pendentes automaticamente
+    db.Database.Migrate();
 }
 
 app.Run();

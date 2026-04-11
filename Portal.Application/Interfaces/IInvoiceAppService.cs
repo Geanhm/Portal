@@ -10,7 +10,9 @@ namespace Portal.Application.Interfaces
         Task<IEnumerable<InvoiceReadDto>> GetAllAsync();
         Task<InvoiceReadDto?> GetByIdAsync(Guid id);
         Task<InvoiceReadDto> CreateAsync(InvoiceCreateDto dto);
-        Task<bool> UpdateAsync(Guid id, InvoiceUpdateDto dto);
-        Task<bool> DeleteAsync(Guid id);
+        Task UpdateAsync(Guid id, InvoiceUpdateDto dto);
+        Task DeleteAsync(Guid id);
+        Task ApproveAsync(Guid id);
+        Task CancelAsync(Guid id);
     }
 }

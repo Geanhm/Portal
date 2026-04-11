@@ -46,7 +46,7 @@ namespace Portal.Domain.Entities
         [Required]
         public StatusAtivoInativo Status { get; private set; } = StatusAtivoInativo.Ativo;
 
-        public void AlterarVendedor(string nomeCompleto, string cpf, string email, string? telefone, decimal percentualComissao, string? status)
+        public void UpdateVendedor(string nomeCompleto, string cpf, string email, string? telefone, decimal percentualComissao, string? status)
         {
             NomeCompleto = nomeCompleto;
             Cpf = cpf;

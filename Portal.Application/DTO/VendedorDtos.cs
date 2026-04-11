@@ -17,6 +17,8 @@ namespace Portal.Application.DTO
         [MaxLength(200)]
         public string Email { get; set; } = null!;
 
+        [Phone]
+        [MaxLength(15)]
         public string? Telefone { get; set; }
 
         [Required]
@@ -34,10 +36,13 @@ namespace Portal.Application.DTO
         public string Cpf { get; set; } = null!;
 
         [Required]
-        [EmailAddress]
+        //[EmailAddress]
+        [RegularExpression(@"^(?!\.)(""([^""\r\\]|\\[""\r\\])*""|([-a-z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)(?<!\.)@[a-z0-9][\w\.-]*[a-z0-9]\.[a-z][a-z\.]*[a-z]$", ErrorMessage = "E-mail inválido")]
         [MaxLength(200)]
         public string Email { get; set; } = null!;
 
+        [Phone]
+        [MaxLength(15)]
         public string? Telefone { get; set; }
 
         [Required]
