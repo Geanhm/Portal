@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Portal.Application.DTO;
 using Portal.Application.Interfaces;
 using Portal.Domain.Entities;
-using Portal.Domain.Entities.Enums;
+using Portal.Domain.Validators;
 using Portal.Infra.Data.Repository;
 
 namespace Portal.Application.AppServices
@@ -51,15 +51,19 @@ namespace Portal.Application.AppServices
 
         public async Task<VendedorReadDto> CreateAsync(VendedorCreateDto dto)
         {
-            var entity = new Vendedor
-            {
-                NomeCompleto = dto.NomeCompleto,
-                Cpf = dto.Cpf,
-                Email = dto.Email,
-                Telefone = dto.Telefone,
-                PercentualComissao = dto.PercentualComissao,
-                Status = Enum.TryParse<StatusAtivoInativo>(dto.Status, true, out var st) ? st : StatusAtivoInativo.Ativo
-            };
+            if (await _db.ExisteCpf(dto.Cpf))
+                throw new BusinessException("CPF já cadastrado");
+
+            if (await _db.ExisteEmail(dto.Email))
+                throw new BusinessException("Email já cadastrado");
+
+            var entity = new Vendedor(
+                dto.NomeCompleto,
+                dto.Cpf,
+                dto.Email,
+                dto.Telefone,
+                dto.PercentualComissao
+            );
 
             _db.Vendedores.Add(entity);
             await _db.SaveChangesAsync();
@@ -76,31 +80,47 @@ namespace Portal.Application.AppServices
             };
         }
 
-        public async Task<bool> UpdateAsync(Guid id, VendedorUpdateDto dto)
+        public async Task UpdateAsync(Guid id, VendedorUpdateDto dto)
         {
             var entity = await _db.Vendedores.FindAsync(id);
-            if (entity == null) return false;
+            if (entity == null)
+                throw new BusinessException("Vendedor não encontrado para atualização.");
 
-            entity.NomeCompleto = dto.NomeCompleto;
-            entity.Cpf = dto.Cpf;
-            entity.Email = dto.Email;
-            entity.Telefone = dto.Telefone;
-            entity.PercentualComissao = dto.PercentualComissao;
-            if (!string.IsNullOrWhiteSpace(dto.Status) && Enum.TryParse<StatusAtivoInativo>(dto.Status, true, out var st))
-                entity.Status = st;
+            if (await _db.ExisteCpf(dto.Cpf))
+                throw new BusinessException("Este CPF já está sendo usado por outro vendedor.");
 
-            _db.Vendedores.Update(entity);
+            if (await _db.ExisteEmail(dto.Email))
+                throw new BusinessException("Este email já está sendo usado por outro vendedor.");
+
+            entity.AlterarVendedor(
+                dto.NomeCompleto,
+                dto.Cpf,
+                dto.Email,
+                dto.Telefone,
+                dto.PercentualComissao,
+                dto.Status
+            );
+
             await _db.SaveChangesAsync();
-            return true;
         }
 
-        public async Task<bool> DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
-            var entity = await _db.Vendedores.FindAsync(id);
-            if (entity == null) return false;
-            _db.Vendedores.Remove(entity);
-            await _db.SaveChangesAsync();
-            return true;
+            var vendedorInfo = await _db.Vendedores
+                .Where(v => v.Id == id)
+                .Select(v => new {
+                    Existe = true,
+                    TemComissoes = _db.Comissoes.Any(c => c.Invoice != null && c.Invoice.VendedorId == id)
+                })
+                .FirstOrDefaultAsync();
+
+            if (vendedorInfo == null)
+                throw new BusinessException("Vendedor não encontrado.");
+
+            if (vendedorInfo.TemComissoes)
+                throw new BusinessException("Não é possível excluir um vendedor com comissões. Favor inativar o vendedor.");
+
+            await _db.Vendedores.Where(x => x.Id == id).ExecuteDeleteAsync();
         }
     }
 }

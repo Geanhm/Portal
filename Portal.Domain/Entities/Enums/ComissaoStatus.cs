@@ -2,8 +2,8 @@
 {
     public enum ComissaoStatus
     {
-        Pendente = 1,
-        Paga = 2,
-        Cancelada = 3
+        Pendente = 0,
+        Paga = 1,
+        Cancelada = 2
     }
 }

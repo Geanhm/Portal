@@ -10,16 +10,19 @@ namespace Portal.Infra.Data.Repository
         {
         }
 
-        // Sample DbSet properties for your entities
         public DbSet<Vendedor> Vendedores { get; set; } = null!;
         public DbSet<Invoice> Invoices { get; set; } = null!;
         public DbSet<Comissao> Comissoes { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Configurações extras (tamanho de campos, índices) vão aqui
-            //modelBuilder.Entity<Vendedor>().Property(u => u.Nome).HasMaxLength(100).IsRequired();
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(PortalDbContext).Assembly);
+
             base.OnModelCreating(modelBuilder);
         }
+
+        // Dentro do seu PortalDbContext.cs
+        public async Task<bool> ExisteCpf(string cpf) => await Vendedores.AnyAsync(v => v.Cpf == cpf);
+        public async Task<bool> ExisteEmail(string email) => await Vendedores.AnyAsync(v => v.Email == email);
     }
 }

@@ -45,7 +45,6 @@ namespace Portal.Domain.Entities
         [MaxLength(500)]
         public string? Observacoes { get; set; }
 
-
-
+        public Comissao? Comissao { get; set; }
     }
 }

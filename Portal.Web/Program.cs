@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using Portal.Infra.Data.Repository;
-using Portal.Application.Interfaces;
 using Portal.Application.AppServices;
+using Portal.Application.Interfaces;
+using Portal.Domain.Validators;
+using Portal.Infra.Data.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,11 +26,32 @@ builder.Services.AddDbContext<PortalDbContext>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//builder.Services.AddScoped<IVendedorRepository, VendedorRepository>();
+//builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+
 builder.Services.AddScoped<IVendedorAppService, VendedorAppService>();
 builder.Services.AddScoped<IInvoiceAppService, InvoiceAppService>();
-//builder.Services.AddScoped<IVendedorRepository, VendedorRepository>();
+
 
 var app = builder.Build();
+
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next();
+    }
+    catch (BusinessException ex)
+    {
+        context.Response.StatusCode = 400;
+        await context.Response.WriteAsJsonAsync(new { error = ex.Message });
+    }
+    catch (Exception ex)
+    {
+        context.Response.StatusCode = 500;
+        await context.Response.WriteAsJsonAsync(new { error = "Ocorreu um erro interno inesperado." });
+    }
+});
 
 //if (app.Environment.IsDevelopment())
 //{

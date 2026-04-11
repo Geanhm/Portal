@@ -7,7 +7,8 @@ namespace Portal.Application.Interfaces
         Task<IEnumerable<VendedorReadDto>> GetAllAsync();
         Task<VendedorReadDto?> GetByIdAsync(Guid id);
         Task<VendedorReadDto> CreateAsync(VendedorCreateDto dto);
-        Task<bool> UpdateAsync(Guid id, VendedorUpdateDto dto);
-        Task<bool> DeleteAsync(Guid id);
+        Task UpdateAsync(Guid id, VendedorUpdateDto dto);
+        Task DeleteAsync(Guid id);
+        //Task<bool> UpdateStatusAsync(Guid id);
     }
 }

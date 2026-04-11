@@ -42,16 +42,23 @@ namespace Portal.Web.Controllers
         public async Task<IActionResult> Update(Guid id, VendedorUpdateDto input)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            var ok = await _service.UpdateAsync(id, input);
-            if (!ok) return NotFound();
+            await _service.UpdateAsync(id, input);
             return NoContent();
         }
+
+        //[HttpPut("{id:guid}/status")]
+        //public async Task<IActionResult> UpdateStatus(Guid id)
+        //{
+        //    if (!ModelState.IsValid) return BadRequest(ModelState);
+        //    var ok = await _service.UpdateStatusAsync(id);
+        //    if (!ok) return NotFound();
+        //    return NoContent();
+        //}
 
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var ok = await _service.DeleteAsync(id);
-            if (!ok) return NotFound();
+            await _service.DeleteAsync(id);
             return NoContent();
         }
     }
