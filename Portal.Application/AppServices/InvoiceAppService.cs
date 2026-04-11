@@ -60,9 +60,6 @@ namespace Portal.Application.AppServices
             if (vendedor == null)
                 throw new BusinessException("Vendedor não encontrado.");
 
-            if (vendedor.Status == StatusAtivoInativo.Inativo)
-                throw new BusinessException("Não é possível criar faturas para um vendedor inativo.");
-
             var invoice = new Invoice(dto.VendedorId, 
                                         dto.Cliente, 
                                         dto.ClienteDocumento, 

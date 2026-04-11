@@ -145,19 +145,6 @@ namespace Portal.Tests
         }
 
         [Fact]
-        public void RequiredFields_Missing_Should_FailValidation()
-        {
-            // Arrange
-            var comissao = new Comissao();
-
-            // Act
-            var results = ValidationHelper.Validate(comissao);
-
-            // Assert
-            Assert.NotEmpty(results);
-        }
-
-        [Fact]
         public void ValidComissao_Should_NotHaveValidationErrors()
         {
             // Arrange

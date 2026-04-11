@@ -7,7 +7,7 @@ namespace Portal.Domain.Entities
 {
     public class Comissao : BaseEntity
     {
-        public Comissao()
+        protected Comissao()
         {
         }
 
@@ -68,6 +68,8 @@ namespace Portal.Domain.Entities
 
         public void Cancelar()
         {
+            if (Status == ComissaoStatus.Paga)
+                throw new BusinessException("Não é possível cancelar uma comissão que já foi paga.");
             Status = ComissaoStatus.Cancelada;
         }
     }
