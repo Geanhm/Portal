@@ -13,6 +13,9 @@ namespace Portal.Domain.Entities
 
         public Invoice(Guid vendedorId, string cliente, string clienteDocumento, decimal valorTotal, string? observacoes, Vendedor vendedor)
         {
+            if (vendedor.Status == StatusAtivoInativo.Inativo)
+                throw new BusinessException("Não é possível criar uma fatura para um vendedor inativo.");
+
             Number = $"INV-{DateTime.UtcNow:yyyyMMddHHmmssfff}-{Guid.NewGuid():N}".ToUpper(); //To do gerar de outra forma mais numerica
 
             VendedorId = vendedorId;
@@ -73,6 +76,9 @@ namespace Portal.Domain.Entities
 
         public void AtualizarDados(string? cliente, string? clienteDocumento, decimal? valorTotal, string? observacoes, Vendedor? novoVendedor = null)
         {
+            if(Status == InvoiceStatus.Cancelada)
+                throw new BusinessException("Não é possível alterar dados de uma fatura cancelada.");
+
             if (!string.IsNullOrWhiteSpace(cliente)) Cliente = cliente;
             if (!string.IsNullOrWhiteSpace(clienteDocumento)) ClienteDocumento = clienteDocumento;
             if (!string.IsNullOrWhiteSpace(observacoes)) Observacoes = observacoes;
@@ -81,13 +87,22 @@ namespace Portal.Domain.Entities
             bool vendedorMudou = novoVendedor != null;
 
             if (valorMudou) ValorTotal = valorTotal!.Value;
-            if (vendedorMudou) VendedorId = novoVendedor!.Id;
+            
+            if (vendedorMudou)
+            {
+                VendedorId = novoVendedor!.Id;
+                if (Status == InvoiceStatus.Aprovada)
+                    throw new BusinessException("Não é possível alterar o vendedor de uma fatura aprovada");
+
+                if (novoVendedor.Status == StatusAtivoInativo.Inativo)
+                    throw new BusinessException("Não é possível atualizar a fatura para um vendedor inativo.");
+            }
 
             if (valorMudou || vendedorMudou)
             {
                 if (Comissao == null) throw new BusinessException("Erro interno: Comissão não carregada.");
 
-                if ((valorMudou || vendedorMudou) && Comissao?.Status == ComissaoStatus.Paga)
+                if (Comissao?.Status == ComissaoStatus.Paga)
                     throw new BusinessException("Não é possível alterar valores de uma fatura com comissão já paga.");
 
                 decimal percentual = vendedorMudou ? novoVendedor!.PercentualComissao : Comissao.PercentualAplicado;

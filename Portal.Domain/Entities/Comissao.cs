@@ -23,7 +23,7 @@ namespace Portal.Domain.Entities
         public decimal ValorBase { get; private set; }
 
         [Required]
-        [Range(0, 15, ErrorMessage = "Percentual aplicado deve estar entre 0 e 15.")]
+        [Range(typeof(decimal), "0", "15", ErrorMessage = "Percentual aplicado deve estar entre 0 e 15.")]
         [Column(TypeName = "decimal(5,2)")]
         public decimal PercentualAplicado { get; private set; }
 
@@ -46,6 +46,12 @@ namespace Portal.Domain.Entities
 
         public void Calcular(decimal valorInvoice, decimal percentualVendedor)
         {
+            if (percentualVendedor < 0 || percentualVendedor > 15)
+                throw new BusinessException("Percentual aplicado deve estar entre 0 e 15.");
+
+            if (valorInvoice <= 0)
+                throw new BusinessException("Valor base deve ser maior que zero.");
+
             ValorBase = valorInvoice;
             PercentualAplicado = percentualVendedor;
             ValorComissao = Math.Round(ValorBase * (PercentualAplicado / 100m), 2);

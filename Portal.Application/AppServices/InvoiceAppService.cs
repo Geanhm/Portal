@@ -103,9 +103,6 @@ namespace Portal.Application.AppServices
                 novoVendedor = await _db.Vendedores.FindAsync(dto.VendedorId.Value);
                 if (novoVendedor == null)
                     throw new BusinessException("Novo vendedor não encontrado.");
-
-                if (novoVendedor.Status == StatusAtivoInativo.Inativo)
-                    throw new BusinessException("Não é possível atualizar a fatura para um vendedor inativo.");
             }
 
             invoice.AtualizarDados(

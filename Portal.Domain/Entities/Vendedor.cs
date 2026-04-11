@@ -58,5 +58,10 @@ namespace Portal.Domain.Entities
                 Status = novoStatus;
             }
         }
+
+        public void Inativar()
+        {
+            Status = StatusAtivoInativo.Inativo;
+        }
     }
 }

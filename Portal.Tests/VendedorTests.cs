@@ -14,12 +14,7 @@ namespace Portal.Tests
         [Fact]
         public void ValidVendedor_Should_PassValidation()
         {
-            var vendedor = new Vendedor(
-                nomeCompleto: "Nome Valido",
-                cpf: "529.982.247-25",
-                email: "email@example.com",
-                telefone: "5511999999999",
-                percentualComissao: 5m);
+            var vendedor = ValidationHelper.NovoVendedorValido();
 
             var results = ValidationHelper.Validate(vendedor);
             Assert.Equal(StatusAtivoInativo.Ativo, vendedor.Status);
