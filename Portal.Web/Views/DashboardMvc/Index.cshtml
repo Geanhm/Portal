@@ -1,0 +1,180 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="bi bi-speedometer2"></i> Dashboard de Gestão</h2>
+        <div class="badge bg-dark p-2">
+            <i class="bi bi-calendar3"></i> Criadas (30 dias): <span id="kpiCriadas30Dias">0</span>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <form id="formFiltro" class="row g-3 align-items-end">
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold">Data Início</label>
+                    <input type="date" id="dataInicio" class="form-control" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold">Data Fim</label>
+                    <input type="date" id="dataFim" class="form-control" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Vendedor</label>
+                    <select id="vendedorId" class="form-select">
+                        <option value="">Todos os Vendedores</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold">Status</label>
+                    <select id="statusInvoice" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="0">Pendente</option>
+                        <option value="1">Aprovada</option>
+                        <option value="2">Cancelada</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="button" onclick="carregarDashboard()" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Filtrar
+                    </button>
+                    <button type="button" class="btn btn-outline-success" title="Exportar">
+                        <i class="bi bi-file-earmark-excel"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm p-3 border-start border-primary border-4">
+                <div class="text-muted small fw-bold">TOTAL INVOICES</div>
+                <h3 id="kpiTotalInvoices" class="mb-0">0</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm p-3 border-start border-warning border-4">
+                <div class="text-muted small fw-bold">PENDENTES</div>
+                <h3 id="kpiTotalPendentes" class="mb-0 text-warning">0</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm p-3 border-start border-success border-4">
+                <div class="text-muted small fw-bold">APROVADAS</div>
+                <h3 id="kpiTotalAprovadas" class="mb-0 text-success">0</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm p-3 border-start border-danger border-4">
+                <div class="text-muted small fw-bold">CANCELADAS</div>
+                <h3 id="kpiTotalCanceladas" class="mb-0 text-danger">0</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card bg-success text-white border-0 shadow-sm p-3">
+                <div class="small fw-bold opacity-75">VALOR TOTAL APROVADO</div>
+                <h2 id="kpiValorAprovado" class="mb-0">R$ 0,00</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-warning text-dark border-0 shadow-sm p-3">
+                <div class="small fw-bold opacity-75">COMISSÕES PENDENTES</div>
+                <h2 id="kpiComissoesPendentes" class="mb-0">R$ 0,00</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-primary text-white border-0 shadow-sm p-3">
+                <div class="small fw-bold opacity-75">COMISSÕES PAGAS</div>
+                <h2 id="kpiComissoesPagas" class="mb-0">R$ 0,00</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3 fw-bold">
+            <i class="bi bi-trophy text-warning me-2"></i> Top 5 Vendedores (Comissão)
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Vendedor</th>
+                        <th class="text-end pe-4">Total Comissão</th>
+                    </tr>
+                </thead>
+                <tbody id="listaTopVendedores">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const API_DASHBOARD = '/api/Dashboard';
+        const API_VENDEDORES = '/api/Vendedores';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarVendedores();
+            carregarDashboard();
+        });
+
+        async function carregarVendedores() {
+            const res = await fetch(API_VENDEDORES);
+            const data = await res.json();
+            const select = document.getElementById('vendedorId');
+            data.forEach(v => {
+                select.innerHTML += `<option value="${v.id}">${v.nomeCompleto}</option>`;
+            });
+        }
+
+        async function carregarDashboard() {
+            const params = new URLSearchParams({
+                dataInicio: document.getElementById('dataInicio').value,
+                dataFim: document.getElementById('dataFim').value,
+                statusInvoice: document.getElementById('statusInvoice').value,
+                vendedorId: document.getElementById('vendedorId').value
+            });
+
+            // Limpa parâmetros vazios para não sujar a URL
+            for (let [key, value] of params.entries()) {
+                if (!value) params.delete(key);
+            }
+
+            const res = await fetch(`${API_DASHBOARD}?${params.toString()}`);
+            const data = await res.json();
+
+            // Preencher KPIs
+            document.getElementById('kpiTotalInvoices').innerText = data.totalInvoices;
+            document.getElementById('kpiTotalPendentes').innerText = data.totalPendentes;
+            document.getElementById('kpiTotalAprovadas').innerText = data.totalAprovadas;
+            document.getElementById('kpiTotalCanceladas').innerText = data.totalCanceladas;
+            document.getElementById('kpiCriadas30Dias').innerText = data.totalCriadasNosUltimos30Dias;
+
+            // Preencher Financeiro
+            const formatCurrency = (val) => val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            document.getElementById('kpiValorAprovado').innerText = formatCurrency(data.valorTotalAprovadas);
+            document.getElementById('kpiComissoesPendentes').innerText = formatCurrency(data.totalComissoesPendentes);
+            document.getElementById('kpiComissoesPagas').innerText = formatCurrency(data.totalComissoesPagas);
+
+            // Preencher Tabela Top Vendedores
+            const tbody = document.getElementById('listaTopVendedores');
+            tbody.innerHTML = data.topVendedores.map(v => `
+                <tr>
+                    <td class="ps-4 fw-bold">${v.nome}</td>
+                    <td class="text-end pe-4 text-primary fw-bold">${formatCurrency(v.totalComissao)}</td>
+                </tr>
+            `).join('');
+
+            if(data.topVendedores.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="2" class="text-center p-4 text-muted">Nenhum dado encontrado</td></tr>';
+            }
+        }
+    </script>
+}

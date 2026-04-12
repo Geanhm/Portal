@@ -7,7 +7,7 @@ using Portal.Infra.Data.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -27,7 +27,6 @@ builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 
 var app = builder.Build();
-
 
 app.Use(async (context, next) =>
 {
@@ -51,14 +50,17 @@ app.Use(async (context, next) =>
     }
 });
 
+app.UseHttpsRedirection();
+app.UseStaticFiles(); // Importante para o JS das Views funcionar
+app.UseRouting();
+
 //if (app.Environment.IsDevelopment())
 //{
 //app.MapOpenApi();
-    app.UseSwagger();
+app.UseSwagger();
     app.UseSwaggerUI();
 //}
 
-app.UseHttpsRedirection();
 
 try //To do.: retirar o try catch depois de testar via swagger.
 {
@@ -72,10 +74,16 @@ catch (System.Reflection.ReflectionTypeLoadException ex)
     }
 }
 
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Dashboard}/{action=Index}/{id?}");
+
+// 1. PRIMEIRO você configura o que precisa rodar ao iniciar (como as Migrations)
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<PortalDbContext>();
-    //db.Database.Migrate(); //To do.: Rodar migrations
+    db.Database.Migrate();
 }
 
 app.Run();

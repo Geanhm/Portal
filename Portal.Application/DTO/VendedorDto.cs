@@ -1,3 +1,4 @@
+using Portal.Domain.Validators;
 using System.ComponentModel.DataAnnotations;
 
 namespace Portal.Application.DTO
@@ -10,6 +11,7 @@ namespace Portal.Application.DTO
         public string NomeCompleto { get; set; } = null!;
 
         [Required]
+        [Cpf(ErrorMessage = "CPF inválido.")]
         public string Cpf { get; set; } = null!;
 
         [Required]
@@ -34,6 +36,7 @@ namespace Portal.Application.DTO
         public string NomeCompleto { get; set; } = null!;
 
         [Required]
+        [Cpf(ErrorMessage = "CPF inválido.")]
         public string Cpf { get; set; } = null!;
 
         [Required]
