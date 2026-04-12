@@ -75,7 +75,7 @@ catch (System.Reflection.ReflectionTypeLoadException ex)
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<PortalDbContext>();
-    //db.Database.Migrate();
+    //db.Database.Migrate(); //To do.: Rodar migrations
 }
 
 app.Run();

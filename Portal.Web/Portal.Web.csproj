@@ -24,4 +24,8 @@
     <ProjectReference Include="..\Portal.Infra.Data.Repository\Portal.Infra.Data.Repository.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\" />
+  </ItemGroup>
+
 </Project>
