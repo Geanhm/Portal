@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Portal.Application.DTO;
 using Portal.Application.Interfaces;
 using Portal.Domain.Entities;
-using Portal.Domain.Entities.Enums;
 using Portal.Domain.Validators;
 using Portal.Infra.Data.Repository;
 

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Portal.Application.AppServices;
 using Portal.Application.Interfaces;
+using Portal.Domain.Interfaces;
 using Portal.Domain.Validators;
 using Portal.Infra.Data.Repository;
 
@@ -22,6 +23,8 @@ builder.Services.AddDbContext<PortalDbContext>(options =>
 
 builder.Services.AddScoped<IVendedorAppService, VendedorAppService>();
 builder.Services.AddScoped<IInvoiceAppService, InvoiceAppService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 
 var app = builder.Build();
 
@@ -72,7 +75,7 @@ catch (System.Reflection.ReflectionTypeLoadException ex)
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<PortalDbContext>();
-    db.Database.Migrate();
+    //db.Database.Migrate();
 }
 
 app.Run();

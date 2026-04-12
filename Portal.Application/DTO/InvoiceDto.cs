@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Portal.Application.DTO
 {
+    //InvoiceDto generic para os outros herdar, maybe static
     public class InvoiceCreateDto
     {
         [Required]

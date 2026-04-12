@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Portal.Application.DTO
 {
+    //VendedorDto generic para os outros herdar, maybe static
     public class VendedorCreateDto
     {
         [Required]
