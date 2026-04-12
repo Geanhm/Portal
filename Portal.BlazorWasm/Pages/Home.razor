@@ -1,0 +1,127 @@
+﻿@page "/"
+@using Portal.Web.ViewModels.Dashboard.DashboardView
+@inject HttpClient Http
+
+<PageTitle>Dashboard de Gestão</PageTitle>
+
+<div class="container-fluid">
+    <h1 class="mb-4">Dashboard</h1>
+
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Data Início</label>
+                    <input type="date" class="form-control" @bind="filtros.DataInicio" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Data Fim</label>
+                    <input type="date" class="form-control" @bind="filtros.DataFim" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" @bind="filtros.StatusInvoice">
+                        <option value="">Todos</option>
+                        @foreach (var status in Enum.GetValues<InvoiceStatus>())
+                        {
+                            <option value="@status">@status</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end gap-2">
+                    <button class="btn btn-primary w-100" @onclick="CarregarDados">
+                        <span class="bi bi-search"></span> Buscar
+                    </button>
+
+                    <div class="dropdown w-100">
+                        <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
+                            Mais Opções
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><button class="dropdown-item" @onclick="ExportarPDF"><span class="bi bi-file-pdf text-danger"></span> Exportar PDF</button></li>
+                            <li><button class="dropdown-item" @onclick="ExportarExcel"><span class="bi bi-file-excel text-success"></span> Exportar Excel</button></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (dados == null)
+    {
+        <div class="text-center"><div class="spinner-border text-primary" role="status"></div></div>
+    }
+    else
+    {
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card border-start border-primary border-4 shadow-sm p-3">
+                    <small class="text-muted fw-bold">TOTAL INVOICES</small>
+                    <h3 class="fw-bold">@dados.TotalInvoices</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-start border-success border-4 shadow-sm p-3">
+                    <small class="text-muted fw-bold">VALOR APROVADAS</small>
+                    <h3 class="fw-bold text-success">@dados.ValorTotalAprovadas.ToString("C")</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-start border-warning border-4 shadow-sm p-3">
+                    <small class="text-muted fw-bold">COMISSÕES PENDENTES</small>
+                    <h3 class="fw-bold text-warning">@dados.TotalComissoesPendentes.ToString("C")</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-start border-info border-4 shadow-sm p-3">
+                    <small class="text-muted fw-bold">COMISSÕES PAGAS</small>
+                    <h3 class="fw-bold text-info">@dados.TotalComissoesPagas.ToString("C")</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white fw-bold">Top 5 Vendedores (Comissão)</div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nome</th>
+                                    <th class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var v in dados.TopVendedores)
+                                {
+                                    <tr>
+                                        <td>@v.Nome</td>
+                                        <td class="text-end fw-bold">@v.TotalComissao.ToString("C")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private DashboardDto? dados;
+    private DashboardFiltroDto filtros = new();
+
+    protected override async Task OnInitializedAsync() => await CarregarDados();
+
+    private async Task CarregarDados()
+    {
+        // Monta a query string baseada nos filtros
+        var url = $"api/dashboard/consolidado?dataInicio={filtros.DataInicio?.ToString("yyyy-MM-dd")}&dataFim={filtros.DataFim?.ToString("yyyy-MM-dd")}&status={filtros.StatusInvoice}&vendedorId={filtros.VendedorId}";
+        dados = await Http.GetFromJsonAsync<DashboardView>(url);
+    }
+
+    private void ExportarPDF() { /* Lógica para chamar endpoint de PDF */ }
+    private void ExportarExcel() { /* Lógica para chamar endpoint de Excel */ }
+}

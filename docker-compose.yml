@@ -11,6 +11,7 @@ services:
 
     environment:
       - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=PortalDb;User Id=sa;Password=narwal@2026;TrustServerCertificate=True;
+      - ASPNETCORE_ENVIRONMENT=Development
 
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -25,3 +26,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  portal-blazor:
+    container_name: portal-blazor
+    build:
+      context: .
+      dockerfile: Portal.BlazorWasm/Dockerfile
+    ports:
+      - "8080:80"

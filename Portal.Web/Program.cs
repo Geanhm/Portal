@@ -7,6 +7,16 @@ using Portal.Infra.Data.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("BlazorAppPolicy", policy =>
+    {
+        policy.WithOrigins("http://localhost:8080")
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -59,6 +69,7 @@ app.Use(async (context, next) =>
 //}
 
 app.UseHttpsRedirection();
+app.UseCors("BlazorPolicy");
 
 try //To do.: retirar o try catch depois de testar via swagger.
 {

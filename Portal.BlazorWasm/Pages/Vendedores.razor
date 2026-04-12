@@ -1,0 +1,29 @@
+﻿@page "/vendedores"
+@using Portal.Application.DTO
+@inject HttpClient Http
+
+<h1>Lista de Vendedores</h1>
+
+@if (vendedores == null)
+{
+    <p><em>Carregando vendedores da API...</em></p>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var v in vendedores)
+        {
+            <li class="list-group-name">@v.NomeCompleto</li>
+        }
+    </ul>
+}
+
+@code {
+    private List<VendedorCreateDto>? vendedores;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Esta chamada vai bater na sua Controller no Portal.Web (container API)
+        vendedores = await Http.GetFromJsonAsync<List<VendedorCreateDto>>("api/vendedor");
+    }
+}
