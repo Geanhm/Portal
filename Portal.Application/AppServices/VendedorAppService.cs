@@ -61,7 +61,7 @@ namespace Portal.Application.AppServices
 
             var entity = new Vendedor(
                 dto.NomeCompleto,
-                dto.Cpf,
+                cpfLimpo,
                 dto.Email,
                 dto.Telefone,
                 dto.PercentualComissao

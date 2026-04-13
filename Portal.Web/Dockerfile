@@ -30,4 +30,5 @@ RUN dotnet publish "./Portal.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+RUN ls -la /app/wwwroot || echo "WARNING: wwwroot not found"
 ENTRYPOINT ["dotnet", "Portal.Web.dll"]

@@ -48,7 +48,7 @@ app.Use(async (context, next) =>
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"[Erro Crítico]: {ex.Message}"); //Criar log apartir daqui
+        Console.WriteLine($"[Erro Crítico]: {ex.Message}");
         
         context.Response.StatusCode = 500;
         context.Response.ContentType = "application/json";  

@@ -8,13 +8,17 @@ services:
     depends_on:
       sqlserver:
         condition: service_healthy
-
+    volumes:
+      - ./aspnet-keys:/home/app/.aspnet/DataProtection-Keys
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=PortalDb;User Id=sa;Password=narwal@2026;TrustServerCertificate=True;
 
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: sqlserver # O nome aqui deve ser o mesmo usado no Server da ConnectionString acima
+    container_name: sqlserver
+    volumes:
+      - sql_data:/var/opt/mssql
     environment:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=narwal@2026
@@ -25,3 +29,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+volumes:
+    sql_data:
