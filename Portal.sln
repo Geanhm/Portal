@@ -10,6 +10,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portal.Web", "Portal.Web\Portal.Web.csproj", "{D066996C-0FAC-4A38-9D69-DCB825D742D9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portal.Tests", "Portal.Tests\Portal.Tests.csproj", "{30089A9F-6EBA-4E2B-818A-49400E1F3739}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F30B4A5C-024B-4D05-BD9F-2359BC908B86} = {F30B4A5C-024B-4D05-BD9F-2359BC908B86}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portal.Infra.Data.Repository", "Portal.Infra.Data.Repository\Portal.Infra.Data.Repository.csproj", "{D14FE8AF-614A-49F3-BEAA-F3D141DD7EC6}"
 EndProject

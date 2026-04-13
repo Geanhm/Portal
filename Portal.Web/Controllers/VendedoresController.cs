@@ -33,7 +33,6 @@ namespace Portal.Web.Controllers
         [HttpPost]
         public async Task<ActionResult<VendedorReadDto>> Create(VendedorCreateDto input)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
             var created = await _service.CreateAsync(input);
             return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
         }
@@ -41,7 +40,6 @@ namespace Portal.Web.Controllers
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> Update(Guid id, VendedorUpdateDto input)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
             await _service.UpdateAsync(id, input);
             return NoContent();
         }
@@ -49,9 +47,7 @@ namespace Portal.Web.Controllers
         //[HttpPut("{id:guid}/status")]
         //public async Task<IActionResult> UpdateStatus(Guid id)
         //{
-        //    if (!ModelState.IsValid) return BadRequest(ModelState);
-        //    var ok = await _service.UpdateStatusAsync(id);
-        //    if (!ok) return NotFound();
+        //    await _service.UpdateStatusAsync(id);
         //    return NoContent();
         //}
 

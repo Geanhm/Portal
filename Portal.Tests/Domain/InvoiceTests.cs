@@ -6,7 +6,7 @@ using System;
 using System.Linq;
 using Xunit;
 
-namespace Portal.Tests
+namespace Portal.Tests.Domain
 {
     public class InvoiceTests
     {

@@ -25,3 +25,49 @@ namespace Portal.Web.Controllers
         }
     }
 }
+
+
+//namespace Portal.Web.Controllers
+//{
+//    // Remova o [ApiController] e o [Route("api/[controller]")] por enquanto
+//    public class DashboardController : Controller
+//    {
+//        private readonly IDashboardService _dashboardService;
+
+//        public DashboardController(IDashboardService dashboardService)
+//        {
+//            _dashboardService = dashboardService;
+//        }
+
+//        [HttpGet]
+//        public async Task<IActionResult> Index(DateTime? dataInicio, DateTime? dataFim, Guid? vendedorId, int? statusInvoice)
+//        {
+//            var filtro = new DashboardFiltroDto
+//            {
+//                DataInicio = dataInicio,
+//                DataFim = dataFim,
+//                VendedorId = vendedorId,
+//                StatusInvoice = (InvoiceStatus?)statusInvoice
+//            };
+
+//            // Busca os dados da camada de aplicação (Services/Repos)
+//            var dto = await _dashboardService.GetDashboardAsync(filtro);
+
+//            // Mapeia para a sua View que você criou
+//            var viewModel = new DashboardViewModels
+//            {
+//                TotalInvoices = dto.TotalInvoices,
+//                ValorTotalAprovadas = dto.ValorTotalAprovadas,
+//                TotalComissoesPendentes = dto.TotalComissoesPendentes,
+//                TotalComissoesPagas = dto.TotalComissoesPagas,
+//                TopVendedores = dto.TopVendedores.Select(v => new ListaVendedorViewModels
+//                {
+//                    Nome = v.Nome,
+//                    TotalComissao = v.TotalComissao
+//                })
+//            };
+
+//            return View(viewModel); // Isso vai procurar em Views/Dashboard/Index.cshtml
+//        }
+//    }
+//}

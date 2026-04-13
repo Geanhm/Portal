@@ -1,12 +1,10 @@
-using System.ComponentModel.DataAnnotations;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace Portal.Domain.Validators
 {
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class CpfAttribute : ValidationAttribute
+    public static class DocumentValidator
     {
-        public override bool IsValid(object? value)
+        public static bool IsCpf(string? value)
         {
             if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
             {
@@ -38,12 +36,8 @@ namespace Portal.Domain.Validators
             int secondCheck = remainder < 2 ? 0 : 11 - remainder;
             return numbers[10] == secondCheck;
         }
-    }
 
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class CnpjAttribute : ValidationAttribute
-    {
-        public override bool IsValid(object? value)
+        public static bool IsCnpj(string? value)
         {
             if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
             {
@@ -59,8 +53,8 @@ namespace Portal.Domain.Validators
 
             int[] numbers = cnpj.Select(c => c - '0').ToArray();
 
-            int[] firstWeights = new int[12] {5,4,3,2,9,8,7,6,5,4,3,2};
-            int[] secondWeights = new int[13] {6,5,4,3,2,9,8,7,6,5,4,3,2};
+            int[] firstWeights = new int[12] { 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 };
+            int[] secondWeights = new int[13] { 6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 };
 
             int sum = 0;
             for (int i = 0; i < 12; i++)
@@ -78,22 +72,15 @@ namespace Portal.Domain.Validators
             int secondCheck = remainder < 2 ? 0 : 11 - remainder;
             return numbers[13] == secondCheck;
         }
-    }
 
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    public class CpfOrCnpjAttribute : ValidationAttribute
-    {
-        private readonly CpfAttribute _cpf = new();
-        private readonly CnpjAttribute _cnpj = new();
-
-        public override bool IsValid(object? value)
+        public static bool IsCpfOrCnpj(string? value)
         {
-            if (value is not string s) return false;
-            var digits = Regex.Replace(s, @"\D", "");
+            if (string.IsNullOrWhiteSpace(value)) return true;
+            var digits = Regex.Replace(value, @"\D", "");
             return digits.Length switch
             {
-                11 => _cpf.IsValid(s),
-                14 => _cnpj.IsValid(s),
+                11 => IsCpf(value),
+                14 => IsCnpj(value),
                 _ => false
             };
         }

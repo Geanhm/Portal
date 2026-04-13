@@ -1,0 +1,214 @@
+﻿@{
+    ViewData["Title"] = "Gestão de Invoices";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-file-earmark-ruled"></i> Invoices</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalInvoice" onclick="configurarParaNova()">
+            <i class="bi bi-plus-circle"></i> Nova Invoice
+        </button>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Número</th>
+                        <th>Emissão</th>
+                        <th>Cliente</th>
+                        <th>Valor Total</th>
+                        <th>Status</th>
+                        <th class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="listaInvoices">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalInvoice" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitulo">Dados da Invoice</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formInvoice">
+                    <input type="hidden" id="invoiceId" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Vendedor</label>
+                        <select id="vendedorId" class="form-select" required>
+                            <option value="">Carregando vendedores...</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Cliente</label>
+                        <input type="text" id="cliente" class="form-control" required maxlength="200" />
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Documento Cliente</label>
+                            <input type="text" id="clienteDocumento" class="form-control" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Valor Total</label>
+                            <input type="number" id="valorTotal" class="form-control" step="0.01" required />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Observações</label>
+                        <textarea id="observacoes" class="form-control" rows="2" maxlength="500"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="salvarInvoice()">Salvar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const API_INVOICE = '/api/Invoices';
+        const API_VENDEDOR = '/api/Vendedores';
+
+        // Iniciar página
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarInvoices();
+            carregarVendedores();
+        });
+
+        async function carregarVendedores() {
+            const res = await fetch(API_VENDEDOR);
+            const data = await res.json();
+            const select = document.getElementById('vendedorId');
+            select.innerHTML = '<option value="">Selecione um vendedor...</option>';
+            data.forEach(v => {
+                select.innerHTML += `<option value="${v.id}">${v.nomeCompleto}</option>`;
+            });
+        }
+
+        async function carregarInvoices() {
+            const res = await fetch(API_INVOICE);
+            const data = await res.json();
+            const tbody = document.getElementById('listaInvoices');
+
+            tbody.innerHTML = data.map(i => `
+                <tr>
+                    <td><span class="fw-bold">#${i.number}</span></td>
+                    <td>${new Date(i.dataEmissao).toLocaleDateString()}</td>
+                    <td>${i.cliente}</td>
+                    <td>${i.valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                    <td>
+                        <span class="badge ${getStatusBadge(i.status)}">${i.status}</span>
+                    </td>
+                    <td class="text-center">
+                        <div class="btn-group">
+                            ${i.status === 'Pendente' ? `
+                                <button class="btn btn-sm btn-outline-success" onclick="alterarStatus('${i.id}', 'approve')" title="Aprovar"><i class="bi bi-check-circle"></i></button>
+                                <button class="btn btn-sm btn-outline-warning" onclick="alterarStatus('${i.id}', 'cancel')" title="Cancelar"><i class="bi bi-slash-circle"></i></button>
+                            ` : ''}
+                            <button class="btn btn-sm btn-outline-primary" onclick="editarInvoice('${i.id}')" title="Editar"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="excluirInvoice('${i.id}')" title="Excluir"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function getStatusBadge(status) {
+            switch(status) {
+                case 'Aprovada': return 'bg-success';
+                case 'Cancelada': return 'bg-danger';
+                default: return 'bg-warning text-dark';
+            }
+        }
+
+        async function salvarInvoice() {
+            const id = document.getElementById('invoiceId').value;
+            const body = {
+                vendedorId: document.getElementById('vendedorId').value,
+                cliente: document.getElementById('cliente').value,
+                clienteDocumento: document.getElementById('clienteDocumento').value,
+                valorTotal: parseFloat(document.getElementById('valorTotal').value),
+                observacoes: document.getElementById('observacoes').value
+            };
+
+            const url = id ? `${API_INVOICE}/${id}` : API_INVOICE;
+            const method = id ? 'PUT' : 'POST';
+
+            const res = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+
+            if (res.ok) {
+                bootstrap.Modal.getInstance(document.getElementById('modalInvoice')).hide();
+                carregarInvoices();
+            } else {
+                const errorData = await res.json();
+                alert("Erro: " + (errorData.error || "Verifique os dados."));
+            }
+        }
+
+        async function alterarStatus(id, acao) {
+            const res = await fetch(`${API_INVOICE}/${id}/${acao}`, { method: 'POST' });
+            if (res.ok) carregarInvoices();
+            else {
+                const errorData = await res.json();
+                let msg = "Erro na validação:\n";
+
+                if (errorData.errors) { // Erros do ModelState (DataAnnotations)
+                    for (let prop in errorData.errors) {
+                        msg += `- ${errorData.errors[prop]}\n`;
+                    }
+                } else if (errorData.error) { // Erro da sua BusinessException
+                    msg = errorData.error;
+                } else {
+                    msg = "Ocorreu um erro inesperado.";
+                }
+                alert(msg);
+            }
+        }
+
+        async function editarInvoice(id) {
+            const res = await fetch(`${API_INVOICE}/${id}`);
+            const i = await res.json();
+
+            document.getElementById('invoiceId').value = i.id;
+            document.getElementById('vendedorId').value = i.vendedorId;
+            document.getElementById('cliente').value = i.cliente;
+            document.getElementById('clienteDocumento').value = i.clienteDocumento;
+            document.getElementById('valorTotal').value = i.valorTotal;
+            document.getElementById('observacoes').value = i.observacoes || '';
+
+            document.getElementById('modalTitulo').innerText = "Editar Invoice";
+            new bootstrap.Modal(document.getElementById('modalInvoice')).show();
+        }
+
+        async function excluirInvoice(id) {
+            if (confirm("Excluir esta invoice permanentemente?")) {
+                const res = await fetch(`${API_INVOICE}/${id}`, { method: 'DELETE' });
+                if (res.ok) carregarInvoices();
+            }
+        }
+
+        function configurarParaNova() {
+            document.getElementById('formInvoice').reset();
+            document.getElementById('invoiceId').value = '';
+            document.getElementById('modalTitulo').innerText = "Nova Invoice";
+        }
+    </script>
+}
