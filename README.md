@@ -18,6 +18,9 @@ Como diferenciais foram adicionados:
 A aplicação foi construída utilizando **.NET (C#)** com foco em **boas práticas, arquitetura limpa e escalabilidade**.
 
 ---
+<img width="1600" height="909" alt="image" src="https://github.com/user-attachments/assets/95b30b64-fe7c-4dff-8fc3-2acac59f0ab2" />
+
+---
 
 ## 🧠 Arquitetura
 
