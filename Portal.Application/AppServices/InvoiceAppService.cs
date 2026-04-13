@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Portal.Application.DTO;
 using Portal.Application.Interfaces;
 using Portal.Domain.Entities;
+using Portal.Domain.Extensions;
 using Portal.Domain.Validators;
 using Portal.Infra.Data.Repository;
 
@@ -27,7 +28,7 @@ namespace Portal.Application.AppServices
                     DataEmissao = i.DataEmissao,
                     VendedorId = i.VendedorId,
                     Cliente = i.Cliente,
-                    ClienteDocumento = i.ClienteDocumento,
+                    ClienteDocumento = i.ClienteDocumento.FormatarComoCpfCnpj(),
                     ValorTotal = i.ValorTotal,
                     Status = i.Status.ToString(),
                     Observacoes = i.Observacoes
@@ -46,7 +47,7 @@ namespace Portal.Application.AppServices
                 DataEmissao = i.DataEmissao,
                 VendedorId = i.VendedorId,
                 Cliente = i.Cliente,
-                ClienteDocumento = i.ClienteDocumento,
+                ClienteDocumento = i.ClienteDocumento.FormatarComoCpfCnpj(),
                 ValorTotal = i.ValorTotal,
                 Status = i.Status.ToString(),
                 Observacoes = i.Observacoes
@@ -59,9 +60,11 @@ namespace Portal.Application.AppServices
             if (vendedor == null)
                 throw new BusinessException("Vendedor não encontrado.");
 
+            var documentoLimpo = dto.ClienteDocumento.SomenteNumeros();
+
             var invoice = new Invoice(dto.VendedorId, 
                                         dto.Cliente, 
-                                        dto.ClienteDocumento, 
+                                        documentoLimpo, 
                                         dto.ValorTotal, 
                                         dto.Observacoes, 
                                         vendedor);
@@ -77,7 +80,7 @@ namespace Portal.Application.AppServices
                 DataEmissao = invoice.DataEmissao,
                 VendedorId = invoice.VendedorId,
                 Cliente = invoice.Cliente,
-                ClienteDocumento = invoice.ClienteDocumento,
+                ClienteDocumento = invoice.ClienteDocumento.FormatarComoCpfCnpj(),
                 ValorTotal = invoice.ValorTotal,
                 Status = invoice.Status.ToString(),
                 Observacoes = invoice.Observacoes
@@ -101,14 +104,23 @@ namespace Portal.Application.AppServices
                     throw new BusinessException("Novo vendedor não encontrado.");
             }
 
+            var documentoLimpo = dto.ClienteDocumento.SomenteNumeros();
+
             invoice.AtualizarDados(
                 dto.Cliente,
-                dto.ClienteDocumento,
+                documentoLimpo,
                 dto.ValorTotal,
                 dto.Observacoes,
                 novoVendedor);
 
-            await _db.SaveChangesAsync();
+            try
+            {
+                await _db.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new BusinessException("O registro foi alterado por outro usuário. Recarregue a página.");
+            }
         }
 
         public async Task DeleteAsync(Guid id)

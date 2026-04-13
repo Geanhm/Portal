@@ -28,7 +28,8 @@ builder.Services.AddScoped<IVendedorAppService, VendedorAppService>();
 builder.Services.AddScoped<IInvoiceAppService, InvoiceAppService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
-builder.Services.AddFluentValidationAutoValidation(); // Ativa validação automática
+
+builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<VendedorCreateValidator>();
 
 var app = builder.Build();
@@ -47,7 +48,7 @@ app.Use(async (context, next) =>
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"[Erro Crítico]: {ex.Message}"); //Criar log apartir daqui
+        Console.WriteLine($"[Erro Crítico]: {ex.Message}");
         
         context.Response.StatusCode = 500;
         context.Response.ContentType = "application/json";  
@@ -56,29 +57,17 @@ app.Use(async (context, next) =>
 });
 
 app.UseHttpsRedirection();
-app.UseStaticFiles(); // Importante para o JS das Views funcionar
+app.UseStaticFiles();
 app.UseRouting();
 
 //if (app.Environment.IsDevelopment())
 //{
 //app.MapOpenApi();
-app.UseSwagger();
+    app.UseSwagger();
     app.UseSwaggerUI();
 //}
 
-
-try //To do.: retirar o try catch depois de testar via swagger.
-{
-    app.MapControllers();
-}
-catch (System.Reflection.ReflectionTypeLoadException ex)
-{
-    foreach (var le in ex.LoaderExceptions)
-    {
-        Console.WriteLine(le?.Message);
-    }
-}
-
+app.MapControllers();
 
 app.MapControllerRoute(
     name: "default",
@@ -87,7 +76,7 @@ app.MapControllerRoute(
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<PortalDbContext>();
-    //db.Database.Migrate();
+    db.Database.Migrate();
 }
 
 app.Run();

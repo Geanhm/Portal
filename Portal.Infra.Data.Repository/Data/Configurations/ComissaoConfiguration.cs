@@ -15,13 +15,22 @@ namespace Portal.Infra.Data.Repository.Data.Configurations
                    .ValueGeneratedNever(); 
 
             builder.Property(c => c.ValorBase)
-                   .HasPrecision(18, 2);
+                   .HasPrecision(18, 2)
+                   .IsRequired();
 
             builder.Property(c => c.ValorComissao)
-                   .HasPrecision(18, 2);
+                   .HasPrecision(18, 2)
+                   .IsRequired();
 
             builder.Property(c => c.PercentualAplicado)
-                   .HasPrecision(5, 2);
+                   .HasPrecision(5, 2)
+                   .IsRequired();
+
+            builder.Property(c => c.Status)
+                    .IsRequired();
+
+            builder.Property(c => c.DataCalculo)
+                   .IsRequired();
 
             builder.HasOne(c => c.Invoice)
                    .WithOne(i => i.Comissao)

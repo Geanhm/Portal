@@ -5,20 +5,21 @@ using Xunit;
 
 namespace Portal.Tests.ValidatorsTests
 {
-    public class VendedorValidatorTests
+    public class VendedorCreateValidatorTests
     {
         private readonly VendedorCreateValidator _validator = new();
 
         [Fact]
         public void ValidVendedor_Should_PassValidation()
         {
-            var dto = new VendedorCreateDto {
+            var dto = new VendedorCreateDto
+            {
 
-                    NomeCompleto = "Nome Valido",
-                    Cpf = "529.982.247-25",
-                    Email = "email@example.com",
-                    Telefone = "5511999999999",
-                    PercentualComissao = 5m
+                NomeCompleto = "Nome Valido",
+                Cpf = "529.982.247-25",
+                Email = "email@example.com",
+                Telefone = "5511999999999",
+                PercentualComissao = 5m
             };
 
             var result = _validator.TestValidate(dto);

@@ -3,9 +3,11 @@
 namespace Portal.Web.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Route("Dashboard")]
     public class DashboardMvcController : Controller
     {
+        [HttpGet("/")]
+        [HttpGet("Dashboard/Index")]
+        [HttpGet("Dashboard")]
         public IActionResult Index() => View();
     }
 
