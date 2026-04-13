@@ -1,6 +1,9 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Portal.Application.AppServices;
 using Portal.Application.Interfaces;
+using Portal.Application.Validators;
 using Portal.Domain.Interfaces;
 using Portal.Domain.Validators;
 using Portal.Infra.Data.Repository;
@@ -25,6 +28,8 @@ builder.Services.AddScoped<IVendedorAppService, VendedorAppService>();
 builder.Services.AddScoped<IInvoiceAppService, InvoiceAppService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+builder.Services.AddFluentValidationAutoValidation(); // Ativa validação automática
+builder.Services.AddValidatorsFromAssemblyContaining<VendedorCreateValidator>();
 
 var app = builder.Build();
 
@@ -79,11 +84,10 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Dashboard}/{action=Index}/{id?}");
 
-// 1. PRIMEIRO você configura o que precisa rodar ao iniciar (como as Migrations)
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<PortalDbContext>();
-    db.Database.Migrate();
+    //db.Database.Migrate();
 }
 
 app.Run();

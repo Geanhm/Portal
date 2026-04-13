@@ -86,11 +86,17 @@ namespace Portal.Application.AppServices
             if (entity == null)
                 throw new BusinessException("Vendedor não encontrado para atualização.");
 
-            if (dto.Cpf != entity.Cpf && await _db.ExisteCpf(dto.Cpf))
-                throw new BusinessException("Este CPF já está sendo usado por outro vendedor.");
+            if (!string.IsNullOrWhiteSpace(dto.Cpf) && dto.Cpf != entity.Cpf)
+            {
+                if (await _db.Vendedores.AnyAsync(v => v.Cpf == dto.Cpf))
+                    throw new BusinessException("Este CPF já está sendo usado por outro vendedor.");
+            }
 
-            if (dto.Email != entity.Email && await _db.ExisteEmail(dto.Email))
-                throw new BusinessException("Este email já está sendo usado por outro vendedor.");
+            if (!string.IsNullOrWhiteSpace(dto.Email) && dto.Email != entity.Email)
+            {
+                if (await _db.Vendedores.AnyAsync(v => v.Email == dto.Email))
+                    throw new BusinessException("Este email já está sendo usado por outro vendedor.");
+            }
 
             entity.UpdateVendedor(
                 dto.NomeCompleto,
@@ -101,7 +107,14 @@ namespace Portal.Application.AppServices
                 dto.Status
             );
 
-            await _db.SaveChangesAsync();
+            try
+            {
+                await _db.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new BusinessException("O registro foi alterado por outro usuário. Recarregue a página.");
+            }
         }
 
         public async Task DeleteAsync(Guid id)

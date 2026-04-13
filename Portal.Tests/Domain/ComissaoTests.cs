@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading;
 using Xunit;
 
-namespace Portal.Tests
+namespace Portal.Tests.Domain
 {
     public class ComissaoTests
     {

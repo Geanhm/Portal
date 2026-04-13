@@ -11,21 +11,36 @@ namespace Portal.Infra.Data.Repository.Data.Configurations
             builder.ToTable("Vendedores");
 
             builder.HasKey(v => v.Id);
+            
             builder.Property(v => v.Id)
                    .ValueGeneratedNever();
 
-            builder.HasIndex(v => v.Cpf)
-                   .IsUnique();
+            builder.HasIndex(v => v.Cpf).IsUnique();
 
-            builder.HasIndex(v => v.Email)
-                   .IsUnique();
+            builder.HasIndex(v => v.Email).IsUnique();
 
             builder.Property(v => v.NomeCompleto)
                    .IsRequired()
                    .HasMaxLength(200);
 
+            builder.Property(v => v.Cpf)
+                   .IsRequired()
+                   .HasMaxLength(11)
+                   .IsFixedLength();
+
+            builder.Property(v => v.Email)
+                   .IsRequired()
+                   .HasMaxLength(200);
+
+            builder.Property(v => v.Telefone)
+                   .HasMaxLength(15);
+
             builder.Property(v => v.PercentualComissao)
-                   .HasPrecision(5, 2);
+                   .HasPrecision(5, 2)
+                   .IsRequired();
+
+            builder.Property(v => v.Status)
+                   .IsRequired();
 
             builder.Property(v => v.CreatedAt)
                    .ValueGeneratedOnAdd();
