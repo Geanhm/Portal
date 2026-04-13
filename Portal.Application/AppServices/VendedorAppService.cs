@@ -4,6 +4,7 @@ using Portal.Application.Interfaces;
 using Portal.Domain.Entities;
 using Portal.Domain.Validators;
 using Portal.Infra.Data.Repository;
+using Portal.Domain.Extensions;
 
 namespace Portal.Application.AppServices
 {
@@ -24,7 +25,7 @@ namespace Portal.Application.AppServices
                 {
                     Id = v.Id,
                     NomeCompleto = v.NomeCompleto,
-                    Cpf = v.Cpf,
+                    Cpf = v.Cpf.FormatarComoCpfCnpj(),
                     Email = v.Email,
                     Telefone = v.Telefone,
                     PercentualComissao = v.PercentualComissao,
@@ -41,7 +42,7 @@ namespace Portal.Application.AppServices
             {
                 Id = v.Id,
                 NomeCompleto = v.NomeCompleto,
-                Cpf = v.Cpf,
+                Cpf = v.Cpf.FormatarComoCpfCnpj(),
                 Email = v.Email,
                 Telefone = v.Telefone,
                 PercentualComissao = v.PercentualComissao,
@@ -51,7 +52,8 @@ namespace Portal.Application.AppServices
 
         public async Task<VendedorReadDto> CreateAsync(VendedorCreateDto dto)
         {
-            if (await _db.ExisteCpf(dto.Cpf))
+            var cpfLimpo = dto.Cpf.SomenteNumeros();
+            if (await _db.ExisteCpf(cpfLimpo))
                 throw new BusinessException("CPF já cadastrado");
 
             if (await _db.ExisteEmail(dto.Email))
@@ -72,7 +74,7 @@ namespace Portal.Application.AppServices
             {
                 Id = entity.Id,
                 NomeCompleto = entity.NomeCompleto,
-                Cpf = entity.Cpf,
+                Cpf = entity.Cpf.FormatarComoCpfCnpj(),
                 Email = entity.Email,
                 Telefone = entity.Telefone,
                 PercentualComissao = entity.PercentualComissao,
@@ -83,12 +85,14 @@ namespace Portal.Application.AppServices
         public async Task UpdateAsync(Guid id, VendedorUpdateDto dto)
         {
             var entity = await _db.Vendedores.FindAsync(id);
+            var cpfLimpo = dto.Cpf.SomenteNumeros();
+
             if (entity == null)
                 throw new BusinessException("Vendedor não encontrado para atualização.");
 
-            if (!string.IsNullOrWhiteSpace(dto.Cpf) && dto.Cpf != entity.Cpf)
+            if (!string.IsNullOrWhiteSpace(cpfLimpo) && cpfLimpo != entity.Cpf)
             {
-                if (await _db.Vendedores.AnyAsync(v => v.Cpf == dto.Cpf))
+                if (await _db.Vendedores.AnyAsync(v => v.Cpf == cpfLimpo))
                     throw new BusinessException("Este CPF já está sendo usado por outro vendedor.");
             }
 
@@ -100,7 +104,7 @@ namespace Portal.Application.AppServices
 
             entity.UpdateVendedor(
                 dto.NomeCompleto,
-                dto.Cpf,
+                cpfLimpo,
                 dto.Email,
                 dto.Telefone,
                 dto.PercentualComissao,
