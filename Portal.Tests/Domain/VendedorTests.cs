@@ -1,10 +1,4 @@
 using Portal.Domain.Entities;
-using Portal.Domain.Entities.Enums;
-using Portal.Tests.Helpers;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using Xunit;
 
 namespace Portal.Tests.Domain

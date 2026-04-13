@@ -1,9 +1,7 @@
 using Portal.Domain.Entities;
 using Portal.Domain.Entities.Enums;
 using Portal.Domain.Validators;
-using Portal.Tests.Helpers;
 using System;
-using System.Linq;
 using Xunit;
 
 namespace Portal.Tests.Domain
@@ -29,17 +27,6 @@ namespace Portal.Tests.Domain
         }
 
         [Fact]
-        public void ValorTotal_Positive_And_Vendedor_Active_Must_PassValidation()
-        {
-            var vendedor = new Vendedor("Nome", "529.982.247-25", "email@example.com", null, 5m);
-            var invoice = new Invoice(vendedor.Id, "Cliente", "10.845.018/0001-48", 150.50m, null, vendedor);
-
-            var results = ValidationHelper.Validate(invoice);
-
-            Assert.Empty(results);
-        }
-
-        [Fact]
         public void NewInvoice_WithInactiveVendedor_ShouldThrowBusinessException()
         {
             // Arrange
@@ -53,109 +40,6 @@ namespace Portal.Tests.Domain
             Assert.Equal("Não é possível criar uma fatura para um vendedor inativo.", ex.Message);
         }
 
-        [Theory]
-        [InlineData("1234")]
-        [InlineData("abcd1234")]
-        [InlineData("11111111111")]
-        [InlineData("00000000000")]
-        [InlineData("123.456.789-01")]
-        [InlineData("123.456.789-00")]
-        [InlineData("12.345.678/0001-0")] // malformed cnpj
-        [InlineData("123456789")] // too short
-        [InlineData("12345678901234567890")] // too long
-        [InlineData("00.000.000/0000-00")]
-        public void InvalidClienteDocumento_Should_FailValidation(string invalidDoc)
-        {
-
-            var vendedor = new Vendedor("Nome", "529.982.247-25", "email@example.com", null, 5m);
-            var invoice = new Invoice(vendedor.Id, "Cliente", invalidDoc, 150.50m, null, vendedor);
-
-            var results = ValidationHelper.Validate(invoice);
-
-            var error = results.FirstOrDefault(r => r.MemberNames.Contains(nameof(Invoice.ClienteDocumento)));
-
-            Assert.NotNull(error);
-            Assert.Contains("inválido", error.ErrorMessage, StringComparison.OrdinalIgnoreCase);
-        }
-
-        [Theory]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void Invoice_EmptyCliente_Should_FailValidation(string invalidCliente)
-        {
-            // Arrange
-            var vendedor = new Vendedor("Nome", "529.982.247-25", "email@example.com", null, 5m);
-
-            var invoice = new Invoice(vendedor.Id, "Cliente Valido", "529.982.247-25", 100m, null, vendedor);
-
-            // Act (Forçando o estado inválido para testar a DataAnnotation)
-            typeof(Invoice).GetProperty(nameof(Invoice.Cliente))?
-                .SetValue(invoice, invalidCliente);
-
-            var results = ValidationHelper.Validate(invoice);
-
-            // Assert
-            Assert.Contains(results, r => r.MemberNames.Contains(nameof(Invoice.Cliente)));
-        }
-
-        [Fact]
-        public void Invoice_MissingRequiredFields_Should_FailValidation()
-        {
-            // Arrange: Criamos uma instância sem passar pelo construtor de negócio 
-            // para deixar as propriedades com valor default (null ou vazio)
-            var invoice = (Invoice)Activator.CreateInstance(typeof(Invoice), true)!;
-
-            // Act
-            var results = ValidationHelper.Validate(invoice);
-
-            // Assert
-            Assert.NotEmpty(results);
-
-            // 2. Lista de campos que DEVEM gerar erro por estarem nulos/vazios
-            var requiredFields = new[]
-            {
-                nameof(Invoice.Number),
-                nameof(Invoice.Cliente),
-                nameof(Invoice.ClienteDocumento),
-                nameof(Invoice.ValorTotal)
-            };
-
-            foreach (var field in requiredFields)
-            {
-                Assert.Contains(results, r => r.MemberNames.Contains(field));
-            }
-        }
-
-        [Theory]
-        [InlineData("")]
-        [InlineData(" ")]
-        public void EmptyClienteDocumento_Should_FailValidation(string invalidDoc)
-        {
-
-            var vendedor = new Vendedor("Nome", "529.982.247-25", "email@example.com", null, 5m);
-            var invoice = new Invoice(vendedor.Id, "Cliente", invalidDoc, 150.50m, null, vendedor);
-
-            var results = ValidationHelper.Validate(invoice);
-
-            var error = results.FirstOrDefault(r => r.MemberNames.Contains(nameof(Invoice.ClienteDocumento)));
-
-            Assert.NotNull(error);
-            Assert.Contains("required", error.ErrorMessage, StringComparison.OrdinalIgnoreCase);
-        }
-
-        [Theory]
-        [InlineData("52998224725")]
-        [InlineData("529.982.247-25")]
-        [InlineData("12.345.678/0001-95")]
-        public void ValidClienteDocumento_Should_PassValidation(string validDoc)
-        {
-            var vendedor = new Vendedor("Nome", "529.982.247-25", "email@example.com", null, 5m);
-            var invoice = new Invoice(vendedor.Id, "Cliente", validDoc, 100m, null, vendedor);
-
-            var results = ValidationHelper.Validate(invoice);
-
-            Assert.Empty(results);
-        }
 
         [Fact]
         public void AtualizarDados_ChangingValue_ShouldRecalculateComissao()

@@ -159,7 +159,18 @@
                 carregarInvoices();
             } else {
                 const errorData = await res.json();
-                alert("Erro: " + (errorData.error || "Verifique os dados."));
+                let msg = "Erro na validação:\n";
+
+                if (errorData.errors) { // Erros do ModelState (DataAnnotations)
+                    for (let prop in errorData.errors) {
+                        msg += `- ${errorData.errors[prop]}\n`;
+                    }
+                } else if (errorData.error) { // Erro da sua BusinessException
+                    msg = errorData.error;
+                } else {
+                    msg = "Ocorreu um erro inesperado.";
+                }
+                alert(msg);
             }
         }
 

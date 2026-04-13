@@ -108,7 +108,14 @@ namespace Portal.Application.AppServices
                 dto.Observacoes,
                 novoVendedor);
 
-            await _db.SaveChangesAsync();
+            try
+            {
+                await _db.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new BusinessException("O registro foi alterado por outro usuário. Recarregue a página.");
+            }
         }
 
         public async Task DeleteAsync(Guid id)

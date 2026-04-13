@@ -1,7 +1,5 @@
 using Portal.Domain.Entities.Enums;
 using Portal.Domain.Validators;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Portal.Domain.Entities
 {
@@ -16,7 +14,7 @@ namespace Portal.Domain.Entities
             if (vendedor.Status == StatusAtivoInativo.Inativo)
                 throw new BusinessException("Não é possível criar uma fatura para um vendedor inativo.");
 
-            Number = $"INV-{DateTime.UtcNow:yyyyMMddHHmmssfff}-{Guid.NewGuid():N}".ToUpper(); //To do gerar de outra forma mais numerica
+            Number = $"INV-{DateTime.UtcNow:yyyyMMddHHmmssfff}-{Guid.NewGuid():N}".ToUpper();
 
             VendedorId = vendedorId;
             Cliente = cliente;
@@ -27,32 +25,13 @@ namespace Portal.Domain.Entities
             Comissao = new Comissao(valorTotal, vendedor.PercentualComissao, Id);
         }
 
-        [Required]
-        [MaxLength(100)]
         public string Number { get; private set; } = null!;
-
         public DateTime DataEmissao { get; private set; }
-
-        [Required]
         public Guid VendedorId { get; private set; }
-
-        [Required]
-        [MaxLength(200)]
         public string Cliente { get; private set; } = null!;
-
-        [Required]
-        [CpfOrCnpj(ErrorMessage = "CNPJ/CPF do cliente inválido.")]
         public string ClienteDocumento { get; private set; } = null!;
-
-        [Required]
-        [Range(0.01, double.MaxValue, ErrorMessage = "Valor total deve ser maior que zero.")]
-        [Column(TypeName = "decimal(18,2)")]
         public decimal ValorTotal { get; private set; }
-
-        [Required]
         public InvoiceStatus Status { get; private set; } = InvoiceStatus.Pendente;
-
-        [MaxLength(500)]
         public string? Observacoes { get; private set; }
 
         public Comissao Comissao { get; private set; } = null!;

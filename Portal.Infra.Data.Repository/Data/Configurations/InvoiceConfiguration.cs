@@ -15,20 +15,36 @@ namespace Portal.Infra.Data.Repository.Data.Configurations
             builder.Property(i => i.Id)
                    .ValueGeneratedNever();
 
-            builder.HasIndex(i => i.Number)
-                   .IsUnique();
+            builder.Property(i => i.Number)
+                   .IsRequired()
+                   .HasMaxLength(100);
+
+            builder.HasIndex(i => i.Number).IsUnique();
+
+            builder.Property(i => i.Cliente)
+                   .IsRequired()
+                   .HasMaxLength(200);
+
+            builder.Property(i => i.ClienteDocumento)
+                   .IsRequired()
+                   .HasMaxLength(14);
 
             builder.Property(i => i.ValorTotal)
-                   .HasPrecision(18, 2);
+                   .HasPrecision(18, 2)
+                   .IsRequired();
+
+            builder.Property(i => i.Observacoes)
+                   .HasMaxLength(500);
+
+            builder.Property(i => i.Status)
+                   .IsRequired();
 
             builder.HasOne(i => i.Vendedor)
                    .WithMany()
-                   .IsRequired()
                    .HasForeignKey(i => i.VendedorId)
                    .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Property(i => i.CreatedAt)
-                   .ValueGeneratedOnAdd();
+            builder.Property(i => i.CreatedAt).ValueGeneratedOnAdd();
         }
     }
 }

@@ -1,9 +1,7 @@
 using Portal.Domain.Entities;
 using Portal.Domain.Entities.Enums;
 using Portal.Domain.Validators;
-using Portal.Tests.Helpers;
 using System;
-using System.Linq;
 using System.Threading;
 using Xunit;
 
@@ -40,10 +38,8 @@ namespace Portal.Tests.Domain
         [InlineData(150.75, 5.55, 8.37)]   // 150.75 * 0.0555 = 8.366625 -> 8.37
         public void Calcular_ShouldHandleDifferentValuesAndRounding(decimal valor, decimal percentual, decimal esperado)
         {
-            var comissao = new Comissao(1, 1, Guid.NewGuid());
+            var comissao = new Comissao(valor, percentual, Guid.NewGuid());
 
-            comissao.Calcular(valor, percentual);
-            
             Assert.Equal(esperado, comissao.ValorComissao);
         }
 
@@ -109,23 +105,13 @@ namespace Portal.Tests.Domain
         [InlineData(-999.99)]
         public void ValorBase_WhenZeroOrNegative_Should_FailValidation(decimal valorInvalido)
         {
-            var comissao = new Comissao(100m, 10m, Guid.NewGuid());
+            var invoiceId = Guid.NewGuid();
+            var percentualValido = 10m;
 
-            var ex = Assert.Throws<BusinessException>(() => comissao.Calcular(valorInvalido, 10m));
+            var ex = Assert.Throws<BusinessException>(() =>
+                new Comissao(valorInvalido, percentualValido, invoiceId));
 
             Assert.Equal("Valor base deve ser maior que zero.", ex.Message);
-        }
-
-        [Fact]
-        public void ValorBase_MinimumValidValue_Should_PassValidation()
-        {
-            var comissao = new Comissao(0.01m, 10m, Guid.NewGuid());
-
-            // Act
-            var results = ValidationHelper.Validate(comissao);
-
-            // Assert
-            Assert.DoesNotContain(results, r => r.MemberNames.Contains(nameof(Comissao.ValorBase)));
         }
 
         [Theory]
@@ -135,26 +121,12 @@ namespace Portal.Tests.Domain
         public void Calcular_PercentualInvalido_ShouldThrowBusinessException(decimal percentualInvalido)
         {
             // Arrange
-            var comissao = new Comissao(1000, 10, Guid.NewGuid());
+            var invoiceId = Guid.NewGuid();
 
-            // Act & Assert
             var ex = Assert.Throws<BusinessException>(() =>
-                comissao.Calcular(1000, percentualInvalido));
-
+                    new Comissao(1000, percentualInvalido, invoiceId));
+            
             Assert.Contains("entre 0 e 15", ex.Message);
-        }
-
-        [Fact]
-        public void ValidComissao_Should_NotHaveValidationErrors()
-        {
-            // Arrange
-            var comissao = new Comissao(1000, 10, Guid.NewGuid());
-
-            // Act
-            var results = ValidationHelper.Validate(comissao);
-
-            // Assert
-            Assert.Empty(results);
         }
     }
 }

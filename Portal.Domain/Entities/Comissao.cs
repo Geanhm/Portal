@@ -16,32 +16,13 @@ namespace Portal.Domain.Entities
             InvoiceId = invoiceId;
             Calcular(valorInvoice, percentualVendedor);
         }
-
-        [Required]
-        [Column(TypeName = "decimal(18,2)")]
-        [Range(0.01, double.MaxValue, ErrorMessage = "Valor base deve ser maior que zero.")]
         public decimal ValorBase { get; private set; }
-
-        [Required]
-        [Range(typeof(decimal), "0", "15", ErrorMessage = "Percentual aplicado deve estar entre 0 e 15.")]
-        [Column(TypeName = "decimal(5,2)")]
         public decimal PercentualAplicado { get; private set; }
-
-        [Required]
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal ValorComissao { get; private set; } = 0;
-        
-        [Required]
+        public decimal ValorComissao { get; private set; }
         public ComissaoStatus Status { get; private set; } = ComissaoStatus.Pendente;
-
-        [Required]
         public DateTime DataCalculo { get; private set; }
-
         public DateTime? DataPagamento { get; private set; }
-
-        [Required]
         public Guid InvoiceId { get; private set; }
-
         public Invoice? Invoice { get; private set; }
 
         public void Calcular(decimal valorInvoice, decimal percentualVendedor)

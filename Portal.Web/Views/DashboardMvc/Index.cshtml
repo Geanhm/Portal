@@ -113,6 +113,24 @@
             </table>
         </div>
     </div>
+
+    <div class="card shadow-sm border-0 mt-4">
+        <div class="card-header bg-white py-3 fw-bold">
+            <i class="bi bi-list-ul text-primary me-2"></i> Performance por Vendedor (Geral)
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Vendedor</th>
+                        <th class="text-end pe-4">Total acumulado em Comissões</th>
+                    </tr>
+                </thead>
+                <tbody id="listaTodosVendedores">
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
@@ -171,6 +189,18 @@
                     <td class="text-end pe-4 text-primary fw-bold">${formatCurrency(v.totalComissao)}</td>
                 </tr>
             `).join('');
+
+            const tbodyGeral = document.getElementById('listaTodosVendedores');
+            tbodyGeral.innerHTML = data.listaVendedores.map(v => `
+                <tr>
+                    <td class="ps-4">${v.nome}</td>
+                    <td class="text-end pe-4 fw-bold">${formatCurrency(v.totalComissao)}</td>
+                </tr>
+            `).join('');
+
+            if(data.listaVendedores.length === 0) {
+                tbodyGeral.innerHTML = '<tr><td colspan="2" class="text-center p-4 text-muted">Nenhum dado encontrado</td></tr>';
+            }
 
             if(data.topVendedores.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="2" class="text-center p-4 text-muted">Nenhum dado encontrado</td></tr>';

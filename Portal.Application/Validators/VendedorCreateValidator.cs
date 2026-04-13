@@ -54,7 +54,7 @@ namespace Portal.Application.Validators
                 .When(v => !string.IsNullOrWhiteSpace(v.Email));
 
             RuleFor(v => v.Telefone)
-                .MaximumLength(15)
+                .MaximumLength(15).WithMessage("Telefone inválido.")
                 .Matches(@"^\+?\d+$").WithMessage("Telefone inválido.")
                 .When(v => !string.IsNullOrWhiteSpace(v.Telefone));
 
