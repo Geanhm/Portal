@@ -46,7 +46,7 @@ app.Use(async (context, next) =>
         
         context.Response.StatusCode = 500;
         context.Response.ContentType = "application/json";  
-        await context.Response.WriteAsJsonAsync(new { error = "Ocorreu um erro interno inesperado." });
+        await context.Response.WriteAsJsonAsync(new { error = "Ocorreu um erro interno inesperado" });
     }
 });
 

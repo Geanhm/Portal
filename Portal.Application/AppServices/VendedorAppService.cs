@@ -86,10 +86,10 @@ namespace Portal.Application.AppServices
             if (entity == null)
                 throw new BusinessException("Vendedor não encontrado para atualização.");
 
-            if (await _db.ExisteCpf(dto.Cpf))
+            if (dto.Cpf != entity.Cpf && await _db.ExisteCpf(dto.Cpf))
                 throw new BusinessException("Este CPF já está sendo usado por outro vendedor.");
 
-            if (await _db.ExisteEmail(dto.Email))
+            if (dto.Email != entity.Email && await _db.ExisteEmail(dto.Email))
                 throw new BusinessException("Este email já está sendo usado por outro vendedor.");
 
             entity.UpdateVendedor(

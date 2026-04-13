@@ -1,5 +1,7 @@
+using Portal.Domain.Entities.Enums;
 using Portal.Domain.Validators;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Portal.Application.DTO
 {
@@ -20,7 +22,8 @@ namespace Portal.Application.DTO
         [MaxLength(200)]
         public string Email { get; set; } = null!;
 
-        [Phone]
+        //[Phone]
+        [RegularExpression(@"^(\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9})?$", ErrorMessage = "Telefone inválido")]
         [MaxLength(15)]
         public string? Telefone { get; set; }
 
@@ -31,29 +34,27 @@ namespace Portal.Application.DTO
 
     public class VendedorUpdateDto
     {
-        [Required]
         [MaxLength(200)]
-        public string NomeCompleto { get; set; } = null!;
+        public string? NomeCompleto { get; set; } = null!;
 
-        [Required]
         [Cpf(ErrorMessage = "CPF inválido.")]
-        public string Cpf { get; set; } = null!;
-
-        [Required]
+        public string? Cpf { get; set; } = null!;
+        
         //[EmailAddress]
         [RegularExpression(@"^(?!\.)(""([^""\r\\]|\\[""\r\\])*""|([-a-z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)(?<!\.)@[a-z0-9][\w\.-]*[a-z0-9]\.[a-z][a-z\.]*[a-z]$", ErrorMessage = "E-mail inválido")]
         [MaxLength(200)]
-        public string Email { get; set; } = null!;
+        public string? Email { get; set; } = null!;
 
-        [Phone]
+        //[Phone]
+        [RegularExpression(@"^(\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9})?$", ErrorMessage = "Telefone inválido")]
         [MaxLength(15)]
         public string? Telefone { get; set; }
 
-        [Required]
         [Range(0, 15)]
-        public decimal PercentualComissao { get; set; }
+        public decimal? PercentualComissao { get; set; }
 
-        public string? Status { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public StatusAtivoInativo? Status { get; set; }
     }
 
     public class VendedorReadDto

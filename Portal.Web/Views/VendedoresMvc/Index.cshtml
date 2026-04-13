@@ -117,7 +117,7 @@
                 nomeCompleto: document.getElementById('nomeCompleto').value,
                 cpf: document.getElementById('cpf').value,
                 email: document.getElementById('email').value,
-                telefone: document.getElementById('telefone').value,
+                telefone: telefoneValor.trim() === "" ? "" : telefoneValor,
                 percentualComissao: parseFloat(document.getElementById('percentualComissao').value),
                 status: document.getElementById('status').value
             };

@@ -39,6 +39,7 @@ namespace Portal.Domain.Entities
         [Required]
         [MaxLength(200)]
         public string Cliente { get; private set; } = null!;
+
         [Required]
         [CpfOrCnpj(ErrorMessage = "CNPJ/CPF do cliente inválido.")]
         public string ClienteDocumento { get; private set; } = null!;

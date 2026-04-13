@@ -46,17 +46,23 @@ namespace Portal.Domain.Entities
         [Required]
         public StatusAtivoInativo Status { get; private set; } = StatusAtivoInativo.Ativo;
 
-        public void UpdateVendedor(string nomeCompleto, string cpf, string email, string? telefone, decimal percentualComissao, string? status)
+        public void UpdateVendedor(string? nomeCompleto, string? cpf, string? email, string? telefone, decimal? percentualComissao, StatusAtivoInativo? status)
         {
-            NomeCompleto = nomeCompleto;
-            Cpf = cpf;
-            Email = email;
-            Telefone = telefone;
-            PercentualComissao = percentualComissao;
-            if (Enum.TryParse<StatusAtivoInativo>(status, true, out var novoStatus))
+            if (!string.IsNullOrWhiteSpace(nomeCompleto)) NomeCompleto = nomeCompleto!;
+            if (!string.IsNullOrWhiteSpace(cpf)) Cpf = cpf!;
+            if (!string.IsNullOrWhiteSpace(email)) Email = email!;
+            if (!string.IsNullOrWhiteSpace(telefone)) Telefone = telefone;
+            if (telefone != null)
             {
-                Status = novoStatus;
+                Telefone = string.IsNullOrWhiteSpace(telefone) ? null : telefone;
             }
+            if (percentualComissao.HasValue) PercentualComissao = percentualComissao.Value;
+
+            if(status.HasValue) Status = status.Value;
+           // if (!string.IsNullOrWhiteSpace(status) && Enum.TryParse<StatusAtivoInativo>(status, true, out var novoStatus))
+           // {
+           //     Status = novoStatus;
+          //  }
         }
 
         public void Inativar()

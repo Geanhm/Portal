@@ -1,6 +1,4 @@
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Portal.Domain.Validators
@@ -10,6 +8,11 @@ namespace Portal.Domain.Validators
     {
         public override bool IsValid(object? value)
         {
+            if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
+            {
+                return true;
+            }
+
             if (value is not string cpf) return false;
 
             cpf = Regex.Replace(cpf, @"\D", "");
@@ -42,6 +45,11 @@ namespace Portal.Domain.Validators
     {
         public override bool IsValid(object? value)
         {
+            if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
+            {
+                return true;
+            }
+
             if (value is not string cnpj) return false;
 
             cnpj = Regex.Replace(cnpj, @"\D", "");
